@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc" xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:task="http://www.springframework.org/schema/task" xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.1.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd
+		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-3.1.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-3.1.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-3.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.1.xsd">
+	<!-- 自动扫描的包名 -->
+	<context:component-scan base-package="com.tsdata"></context:component-scan>
+	
+	<!-- 默认注解的支持 -->
+	<mvc:annotation-driven />
+
+	<!-- 配置拦截器 -->
+	
+	<!-- 支持上传文件开始 -->
+	  <!-- 启动Spring MVC的注解功能，完成请求和注解POJO的映射 -->  
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" lazy-init="false" />  
+  
+    <!-- 另外最好还要加入DefaultAnnotationHandlerMapping，不然会被 XML或其它的映射覆盖！ -->  
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" /> 
+	 <!-- 支持上传结束 -->  
+	 
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>  
+	<!-- 配置拦截器 -->
+
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver" p:viewClass="org.springframework.web.servlet.view.JstlView" p:suffix=".jsp" />
+
+	<!-- 静态资源访问 -->
+	<mvc:resources mapping="/resource/**" location="/resource/" cache-period="31556926" />
+
+	<!-- 数据源 -->
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="com.mysql.jdbc.Driver"></property>
+		<property name="jdbcUrl" value="jdbc:mysql://localhost/metap"></property>
+		<property name="user" value="root"></property>
+		<property name="password" value="123456"></property>
+		<!--当连接池中的连接耗尽的时候c3p0一次同时获取的连接数。Default: 1 -->
+		<property name="acquireIncrement" value="1">
+		</property>
+		<!--初始化时获取三个连接，取值应在minPoolSize与maxPoolSize之间。Default: 3 -->
+		<property name="initialPoolSize" value="3">
+		</property>
+		<!--最大空闲时间,30秒内未使用则连接被丢弃。若为0则永不丢弃。Default: 0 -->
+		<property name="maxIdleTime" value="30"></property>
+		<!--连接池中保留的最大连接数。Default: 15 -->
+		<property name="maxPoolSize" value="15"></property>
+		<!--连接池中保留的最小连接数。Default: 3 -->
+		<property name="minPoolSize" value="3"></property>
+		<!--两次连接中间隔时间，单位毫秒。Default: 1000 -->
+		<property name="acquireRetryDelay" value="1000"></property>
+		<!--定义在从数据库获取新连接失败后重复尝试的次数。Default: 30 -->
+		<property name="acquireRetryAttempts" value="5"></property>
+		<!--获取连接失败将会引起所有等待连接池来获取连接的线程抛出异常。但是数据源仍有效 保留，并在下次调用getConnection()的时候继续尝试获取连接。如果设为true，那么在尝试 
+			获取连接失败后该数据源将申明已断开并永久关闭。Default: false -->
+		<property name="breakAfterAcquireFailure" value="false"></property>
+	</bean>
+
+	
+	<bean id="sessionFactory"
+		class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource"></property>
+		<property name="mappingLocations"><!-- 放置hibernate的配置文件 -->
+		<list>
+			<value>classpath:/com/tsdata/base/entity/User.hbm.xml</value>
+			<value>classpath:/com/tsdata/sys/entity/News.hbm.xml</value>
+			<value>classpath:/com/tsdata/sys/entity/Project.hbm.xml</value>
+            <value>classpath:/com/tsdata/sys/entity/Press.hbm.xml</value>
+            <value>classpath:/com/tsdata/sys/entity/Category.hbm.xml</value>
+            <value>classpath:/com/tsdata/sys/entity/ProjectImg.hbm.xml</value>
+            <value>classpath:/com/tsdata/sys/entity/Menu.hbm.xml</value>
+		</list>
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.jdbc.fetch_size">100</prop>
+				<prop key="hibernate.jdbc.batch_size">15</prop>
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.cache.query_cache_factory">org.hibernate.cache.StandardQueryCacheFactory</prop>
+				<prop key="hibernate.query.factory_class">org.hibernate.hql.classic.ClassicQueryTranslatorFactory
+				</prop>
+				<prop key="hibernate.connection.provider_class">org.hibernate.connection.C3P0ConnectionProvider
+				</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置Hibernate Template -->
+	<bean id="hibernateTemplate" class="org.springframework.orm.hibernate3.HibernateTemplate">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+	<bean id="userDao" class="com.tsdata.base.dao.UserDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="newsDao" class="com.tsdata.sys.dao.NewsDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="projectDao" class="com.tsdata.sys.dao.ProjectDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="pressDao" class="com.tsdata.sys.dao.PressDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="categoryDao" class="com.tsdata.sys.dao.CategoryDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="projectImgDao" class="com.tsdata.sys.dao.ProjectImgDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+  	
+	<bean id="menuDao" class="com.tsdata.sys.dao.MenuDao">
+		<property name="sessionFactory"><ref local="sessionFactory"/></property>
+  	</bean>
+    
+	<!-- 配置事务 -->
+	<bean id="transactionManager"
+		class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory">
+			<ref bean="sessionFactory" />
+		</property>
+	</bean>
+
+	<bean id="transactionInteceptor"
+        class="org.springframework.transaction.interceptor.TransactionInterceptor">
+        <property name="transactionManager" ref="transactionManager" />
+        <property name="transactionAttributes">
+            <props>
+                <prop key="get*">PROPAGATION_REQUIRED,readOnly</prop>
+                <prop key="*Query">PROPAGATION_REQUIRED,readOnly</prop>
+                <prop key="*Count">PROPAGATION_REQUIRED,readOnly</prop>        
+                <prop key="*">PROPAGATION_REQUIRED</prop>                        
+            </props>
+        </property>
+    </bean>
+    
+    <bean class="org.springframework.aop.framework.autoproxy.BeanNameAutoProxyCreator">        
+        <property name="beanNames">
+            <list>
+                 <value>userService</value>
+                <value>newsService</value>
+                <value>projectService</value>
+                <value>pressService</value>
+                <value>categoryService</value>
+                <value>projectImgService</value>
+                <value>menuService</value>
+            </list>
+        </property>        
+        <property name="interceptorNames">
+            <list>
+                <value>transactionInteceptor</value>
+            </list>
+        </property>
+    </bean> 
+
+   <bean id="userService" class="com.tsdata.base.service.UserServiceExt">
+		<property name="userDao" ref="userDao" />
+  	</bean>
+  	
+	<bean id="newsService" class="com.tsdata.sys.service.NewsServiceExt">
+		<property name="newsDao" ref="newsDao" />
+  	</bean>
+  	
+	<bean id="projectService" class="com.tsdata.sys.service.ProjectServiceExt">
+		<property name="projectDao" ref="projectDao" />
+  	</bean>
+  	
+	<bean id="pressService" class="com.tsdata.sys.service.PressServiceExt">
+		<property name="pressDao" ref="pressDao" />
+  	</bean>
+  	
+	<bean id="categoryService" class="com.tsdata.sys.service.CategoryServiceExt">
+		<property name="categoryDao" ref="categoryDao" />
+  	</bean>
+  	
+	<bean id="projectImgService" class="com.tsdata.sys.service.ProjectImgServiceExt">
+		<property name="projectImgDao" ref="projectImgDao" />
+  	</bean>
+  	
+	<bean id="menuService" class="com.tsdata.sys.service.MenuServiceExt">
+		<property name="menuDao" ref="menuDao" />
+  	</bean>
+  	<!-- 国际化配置开始 -->
+  	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">   
+     
+     <!-- 其中basename用来指定properties文件的通用名
+              如实例中的messages_en.properties,messages_ja.properties通用名都是messages
+      -->
+     <property name="basename" value="messages" />
+     <property name="defaultEncoding" value="UTF-8"/>
+     <property name="useCodeAsDefaultMessage" value="true" />
+     
+   </bean> 
+   
+       <!-- 配置基于Session的处理,将提交上来的locale参数进行处理 -->  
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <!-- 该属性可以不用配置 -->
+        <property name="defaultLocale" value="ja"></property>
+    </bean>  
+    
+    <!-- 国际化请求拦截器处理 -->
+    <mvc:interceptors>  
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor" />  
+    </mvc:interceptors>  
+  	<!-- 国际化配置结束 -->
+</beans>

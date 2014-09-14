@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.tsdata.sys.entity.ProjectExt" table="project">
+        <id name="id" type="java.lang.Long">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+		<property name="title" column="title" type="java.lang.String" />
+		<property name="title_en" column="title_en" type="java.lang.String" />
+		<property name="location" column="location" type="java.lang.String" />
+		<property name="pdate" column="pdate" type="java.lang.String" />
+		<property name="client" column="client" type="java.lang.String" />
+		<property name="program" column="program" type="java.lang.String" />
+		<property name="area" column="area" type="java.lang.String" />
+		<property name="budget" column="budget" type="java.lang.String" />
+		<property name="status" column="status" type="java.lang.String" />
+		<property name="projectteam" column="projectteam" type="java.lang.String" />
+		<property name="collaborator" column="collaborator" type="java.lang.String" />
+		<property name="location_en" column="location_en" type="java.lang.String" />
+		<property name="client_en" column="client_en" type="java.lang.String" />
+		<property name="program_en" column="program_en" type="java.lang.String" />
+		<property name="area_en" column="area_en" type="java.lang.String" />
+		<property name="budget_en" column="budget_en" type="java.lang.String" />
+		<property name="status_en" column="status_en" type="java.lang.String" />
+		<property name="projectteam_en" column="projectteam_en" type="java.lang.String" />
+		<property name="collaborator_en" column="collaborator_en" type="java.lang.String" />
+    </class>
+</hibernate-mapping>

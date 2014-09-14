@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+    <class name="com.tsdata.sys.entity.PressExt" table="press">
+        <id name="id" type="java.lang.Long">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+		<property name="bookname" column="bookname" type="java.lang.String" />
+		<property name="title" column="title" type="java.lang.String" />
+		<property name="author" column="author" type="java.lang.String" />
+		<property name="press" column="press" type="java.lang.String" />
+		<property name="presstime" column="presstime" type="java.lang.String" />
+		<property name="title_en" column="title_en" type="java.lang.String" />
+		<property name="author_en" column="author_en" type="java.lang.String" />
+		<property name="press_en" column="press_en" type="java.lang.String" />
+		<property name="fileurl" column="fileurl" type="java.lang.String" />
+    </class>
+</hibernate-mapping>
